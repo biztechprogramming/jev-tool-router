@@ -1,11 +1,11 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { experimental_evaluate as evaluate } from 'ai';
 import * as z from 'zod/v4';
 import {
   callReadOnlyRoutedTool,
   callRoutedTool,
   closeAllSessions,
+  evaluate,
   getRouterSettings,
   getToolSchema,
   listAllTools,
@@ -18,11 +18,11 @@ import {
 } from './router-core.mjs';
 import { estimateEvaluationBudgetUsage } from './policy.mjs';
 
-if (!process.env.AI_GATEWAY_API_KEY) {
-  throw new Error('AI_GATEWAY_API_KEY is required for the Jev tool router.');
-}
-
 const settings = getRouterSettings();
+
+if (!settings.kevUrl && !process.env.AI_GATEWAY_API_KEY) {
+  throw new Error('AI_GATEWAY_API_KEY is required for the Jev tool router unless kevUrl is set.');
+}
 
 const server = new McpServer({
   name: 'jev-tool-router',

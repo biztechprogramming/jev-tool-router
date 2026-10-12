@@ -3,7 +3,7 @@ import {
   StdioClientTransport,
   getDefaultEnvironment,
 } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { experimental_evaluate as evaluate } from 'ai';
+import { createEvaluate } from './evaluator.mjs';
 import { loadRouterConfig } from './config.mjs';
 import {
   chunkByConstraints,
@@ -16,6 +16,11 @@ import {
 } from './policy.mjs';
 
 const config = await loadRouterConfig();
+export const evaluate = createEvaluate({
+  kevUrl: config.kevUrl,
+  kevModel: config.kevModel,
+  timeoutMs: config.kevTimeoutMs,
+});
 const sessions = new Map();
 const connectingSessions = new Map();
 let inventoryCache = null;
@@ -267,7 +272,8 @@ export function getRouterSettings() {
     threshold: config.threshold,
     maxJevChoices: config.maxJevChoices,
     fallbackCandidateLimit: config.fallbackCandidateLimit,
-    model: config.model,
+    model: config.kevUrl ? 'kev:' + config.kevModel : config.model,
+    kevUrl: config.kevUrl,
     jevStateQuestionBudgetTokens:
       config.jevStateQuestionBudgetTokens,
     jevTotalBudgetTokens: config.jevTotalBudgetTokens,

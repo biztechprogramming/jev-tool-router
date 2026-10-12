@@ -31,6 +31,11 @@ const serverSchema = z
 const routerConfigSchema = z
   .object({
     model: z.string().min(1).default('typesafe-ai/jev'),
+    // Set to a local Kev server (e.g. http://localhost:8009) to route with Kev
+    // instead of hosted Jev via the Vercel AI Gateway.
+    kevUrl: z.url().optional(),
+    kevModel: z.string().min(1).default('kev-latest'),
+    kevTimeoutMs: z.number().positive().default(30_000),
     threshold: z.number().min(0).max(1).default(0.9),
     maxJevChoices: z.number().int().min(2).max(254).default(200),
     descriptionMaxChars: z.number().int().positive().default(240),
